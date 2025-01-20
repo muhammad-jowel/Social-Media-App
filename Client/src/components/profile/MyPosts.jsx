@@ -3,18 +3,17 @@ import { BiLike, BiDislike } from "react-icons/bi";
 import { FaComment, FaShare } from "react-icons/fa";
 import { HiDotsHorizontal } from "react-icons/hi";
 import usePostStore from "../../store/PostStore";
-import { Link } from "react-router-dom";
 
-const PostSection = () => {
-  const { AllPostDetails, AllPostDetailsRequest } = usePostStore();
+const MyPostSection = () => {
+  const { MyPostDetails, MyPostDetailsRequest } = usePostStore();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
-      await AllPostDetailsRequest();
+      await MyPostDetailsRequest();
       setLoading(false);
     })();
-  }, [AllPostDetailsRequest]);
+  }, [MyPostDetailsRequest]);
 
   if (loading) {
     return <p className="text-gray-500 text-center">Loading posts...</p>;
@@ -22,8 +21,8 @@ const PostSection = () => {
 
   return (
     <div>
-      {AllPostDetails && AllPostDetails.length > 0 ? (
-        AllPostDetails.map((post, index) => {
+      {MyPostDetails && MyPostDetails.length > 0 ? (
+        MyPostDetails.map((post, index) => {
           const createdAt = new Date(post.createdAt).toLocaleDateString("en-US", {
             year: "numeric",
             month: "short",
@@ -47,7 +46,7 @@ const PostSection = () => {
                   className="rounded-full w-12 h-12 mr-4"
                 />
                 <div>
-                  <Link to={`/profile`} className="font-semibold text-lg">{userDetails.fullName}</Link>
+                  <h2 className="font-semibold text-lg">{userDetails.fullName}</h2>
                   <p className="text-gray-500 text-sm">{createdAt}</p>
                 </div>
                 <div className="ml-auto">
@@ -98,4 +97,4 @@ const ActionButton = ({ icon: Icon, text, hoverColor, onClick }) => (
   </button>
 );
 
-export default PostSection;
+export default MyPostSection;

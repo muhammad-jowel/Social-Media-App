@@ -169,6 +169,7 @@ export const ReadAllPostService = async () => {
             createdAt: 1,
             "userDetails.fullName": 1,  // Ensure fullName is selected
             "userDetails.profileImg": 1,  // Ensure profileImg is selected
+            "userDetails._id": 1,  // Ensure profileImg is selected
           },
         },
         {

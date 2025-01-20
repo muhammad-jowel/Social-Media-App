@@ -137,7 +137,7 @@ const Profile = () => {
       </div>
 
       {/* Additional Details */}
-      <div className="mt-4 flex space-x-4 text-center mb-10">
+      <div className="mt-4 flex space-x-4 text-center mb-8">
         <div>
           <p className="text-lg font-semibold text-gray-800">
             {ProfileDetails?.followers || 0}
@@ -162,7 +162,7 @@ const Profile = () => {
       <div>
         <button
           onClick={() => setIsOpen(true)}
-          className="mb-10 text-base text-blue-500 underline"
+          className="mb-5 text-base text-blue-500 underline"
         >
           Edit Your Profile
         </button>

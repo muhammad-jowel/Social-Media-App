@@ -154,7 +154,7 @@ const LeftNavbar = () => {
           className="font-serif flex items-center justify-center text-gray-700 hover:bg-gray-200 py-2 px-3 rounded-lg transition duration-200"
         >
           <IoSettings className="text-2xl" />
-          <span className="hidden sm:block">Settings</span>
+          {/* <span className="hidden sm:block">Settings</span> */}
         </Link>
         {/* <button
           onClick={onLogout}

@@ -21,6 +21,8 @@ const PostStore = create((set) => ({
     //     }));
     // },
 
+
+    // Create a new Post
     PostCreateRequest: async (postBody) => {
         try {
             set({isFormSubmit: true});
@@ -80,6 +82,25 @@ const PostStore = create((set) => ({
         console.error("Error fetching posts:", err.response);
         }
     },
+
+
+    // Delete a Post
+    DeletePostRequest: async (postId) => {
+        try {
+            let response = await axios.delete(`${BaseUrl}Delete-Post`, postId, {
+                headers: {
+                    token: Cookies.get('token'),
+                },
+            });
+            return response.data.status ==='success';
+        } catch (err) {
+            unauthorized(err.response);
+            throw err;
+        }
+    },
+
+
+
     
 }));
 

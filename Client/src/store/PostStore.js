@@ -8,19 +8,6 @@ import Cookies from "js-cookie";
 const PostStore = create((set) => ({
 
     isFormSubmit: false,
-    
-    // Create a new Post
-    // PostInputValue: { postImg: '', content: '' },
-
-    // PostInputOnChange: (name, value) => {
-    //     set((state) => ({
-    //         PostInputValue: {
-    //             ...state.PostInputValue,
-    //             [name]: value
-    //         }
-    //     }));
-    // },
-
 
     // Create a new Post
     PostCreateRequest: async (postBody) => {
@@ -85,9 +72,58 @@ const PostStore = create((set) => ({
 
 
     // Delete a Post
-    DeletePostRequest: async (postId) => {
+    DeletePostRequest: async (id) => {
         try {
-            let response = await axios.delete(`${BaseUrl}Delete-Post`, postId, {
+            let response = await axios.delete(`${BaseUrl}Delete-Post`,{
+                data: { id },
+                headers: {
+                    token: Cookies.get('token'),
+                },
+            });
+            return response.data.status ==='success';
+        } catch (err) {
+            unauthorized(err.response);
+            throw err;
+        }
+    },
+
+
+    // Update a Post
+    UpdatePostRequest: async (postBody) => {
+        try {
+            let response = await axios.post(`${BaseUrl}Update-Post`, postBody, {
+                headers: {
+                    token: Cookies.get('token'),
+                },
+            });
+            return response.data.status ==='success';
+        } catch (err) {
+            unauthorized(err.response);
+            throw err;
+        }
+    },
+
+
+    // Like a Post
+    LikePostRequest: async (id) => {
+        try {
+            let response = await axios.post(`${BaseUrl}Like-Post`, { id }, {
+                headers: {
+                    token: Cookies.get('token'),
+                },
+            });
+            return response.data.status ==='success';
+        } catch (err) {
+            unauthorized(err.response);
+            throw err;
+        }
+    },
+
+
+    // Dislike a Post
+    DislikePostRequest: async (id) => {
+        try {
+            let response = await axios.post(`${BaseUrl}Dislike-Post`, { id }, {
                 headers: {
                     token: Cookies.get('token'),
                 },

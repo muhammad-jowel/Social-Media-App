@@ -65,7 +65,7 @@ const Profile = () => {
   const profileFileInput = useRef(null);
 
   return (
-    <div className="flex flex-col items-center min-h-screen">
+    <div className="flex flex-col items-center">
       {/* Cover Image */}
       <div className="relative w-full h-48 bg-gray-300 group">
         <img

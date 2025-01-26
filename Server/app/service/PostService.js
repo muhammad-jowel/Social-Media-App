@@ -91,6 +91,8 @@ export const ReadPostService = async (req, res) => {
                 $project: {
                     postImg: 1,
                     content: 1,
+                    likes: 1,
+                    dislikes: 1,
                     createdAt: 1,
                     "userDetails.fullName": 1,
                     "userDetails.profileImg": 1
@@ -166,6 +168,8 @@ export const ReadAllPostService = async () => {
           $project: {
             postImg: 1,
             content: 1,
+            likes: 1,
+            dislikes: 1,
             createdAt: 1,
             "userDetails.fullName": 1,  // Ensure fullName is selected
             "userDetails.profileImg": 1,  // Ensure profileImg is selected

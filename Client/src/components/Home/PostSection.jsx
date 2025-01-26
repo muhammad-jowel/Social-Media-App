@@ -5,11 +5,13 @@ import { HiDotsHorizontal } from "react-icons/hi";
 import usePostStore from "../../store/PostStore";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+// import { DeleteAlert } from "../../utility/Utility";
+// import Swal from "sweetalert2";
 
 const PostSection = () => {
-  const { AllPostDetails, AllPostDetailsRequest, DeletePostRequest } = usePostStore();
+  const { AllPostDetails, AllPostDetailsRequest, DeletePostRequest, LikePostRequest, DislikePostRequest } = usePostStore();
   const [loading, setLoading] = useState(true);
-  const [dropdownPostId, setDropdownPostId] = useState(null);
+  // const [dropdownPostId, setDropdownPostId] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -23,33 +25,61 @@ const PostSection = () => {
   }
 
 
-  const toggleDropdown = (postId) => {
-    setDropdownPostId((prev) => (prev === postId ? null : postId));
-  };
+  // const toggleDropdown = (postId) => {
+  //   setDropdownPostId((prev) => (prev === postId ? null : postId));
+  // };
 
-  const handleEdit = (postId) => {
-    alert(`Edit clicked for post ${postId}`);
-    setDropdownPostId(null);
-  };
+  // const handleEdit = (postId) => {
+  //   alert(`Edit clicked for post ${postId}`);
+  //   setDropdownPostId(null);
+  // };
 
-  const handleDelete = async (postId) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this post?");
-    if (!confirmDelete) return;
+  // const handleDelete = async (id) => {
+  //   const confirmDelete = await DeleteAlert();
+  //   if (!confirmDelete) return;
 
+  //   try {
+  //       const success = await DeletePostRequest(id);
+  //       if (success) {
+  //           await Swal.fire("Deleted!", "Your post has been deleted.", "success");
+  //           setDropdownPostId(null);
+  //           await AllPostDetailsRequest(); // Refresh posts
+  //       } else {
+  //           await Swal.fire("Failed!", "Failed to delete the post.", "error");
+  //       }
+  //   } catch (error) {
+  //       console.error("Error deleting post:", error);
+  //       await Swal.fire("Error!", "An error occurred while deleting the post.", "error");
+  //   }
+  // };
+
+
+  const handleLike = async (id) => {
     try {
-      const success = await DeletePostRequest(postId);
+      const success = await LikePostRequest(id); // Send like request to backend
       if (success) {
-        alert("Post deleted successfully");
-        setDropdownPostId(null);
-        await AllPostDetailsRequest(); // Refresh posts
+        await AllPostDetailsRequest();
       } else {
-        alert("Failed to delete post");
+        toast.error("Already DisLike!");
       }
     } catch (error) {
-      console.error("Error deleting post:", error);
-      alert("An error occurred while deleting the post.");
+      console.error("Error liking post:", error);     
     }
   };
+
+  const handleDisLike = async (id) => {
+    try {
+      const success = await DislikePostRequest(id);
+      if (success) {
+        await AllPostDetailsRequest();
+      } else {
+        toast.error("Already Like!");
+      }
+    } catch (error) {
+      console.error("Error disliking post:", error);     
+    }
+  };
+
 
 
   return (
@@ -92,12 +122,12 @@ const PostSection = () => {
                 </div>
                 <div className="ml-auto">
                   <HiDotsHorizontal
-                    className="text-2xl text-gray-500 hover:text-red-500 cursor-pointer"
+                    className="text-2xl text-gray-500 cursor-not-allowed"
                     aria-label="More options"
-                    onClick={() => toggleDropdown(post._id)}
+                    // onClick={() => toggleDropdown(post._id)}
                   />
                 </div>
-                {dropdownPostId === post._id && (
+                {/* {dropdownPostId === post._id && (
                   <div className="absolute right-0 mt-28 w-32 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
                     <button
                       className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
@@ -112,7 +142,7 @@ const PostSection = () => {
                       Delete
                     </button>
                   </div>
-                )}
+                )} */}
               </div>
 
               {/* Post Content */}
@@ -131,23 +161,25 @@ const PostSection = () => {
               <div className="flex items-center justify-between">
                 <ActionButton
                   icon={BiLike}
-                  text="Like"
-                  hoverColor="text-blue-500"
+                  text={`Like (${post.likes || 0})`}
+                  hoverColor="text-red-500"
+                  onClick={() => handleLike(post._id)}
                 />
                 <ActionButton
                   icon={BiDislike}
-                  text="Dislike"
+                  text={`Dislike (${post.dislikes || 0})`}
                   hoverColor="text-red-500"
+                  onClick={() => handleDisLike(post._id)}
                 />
                 <ActionButton
                   icon={FaComment}
                   text="Comment"
-                  hoverColor="text-green-500"
+                  hoverColor="text-red-500"
                 />
                 <ActionButton
                   icon={FaShare}
                   text="Share"
-                  hoverColor="text-purple-500"
+                  hoverColor="text-red-500"
                 />
               </div>
             </div>

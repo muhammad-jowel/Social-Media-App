@@ -15,11 +15,19 @@ const MyPostSection = () => {
     UpdatePostRequest,
     LikePostRequest,
     DislikePostRequest,
+    CommentPostRequest,
+    AllCommentsByPostID,
+    AllCommentsByPostIDRequest,
+    DeleteCommentRequest,
   } = usePostStore();
   const [loading, setLoading] = useState(true);
   const [dropdownPostId, setDropdownPostId] = useState(null);
   const [editMode, setEditMode] = useState(null); // Tracks the post being edited
   const [editContent, setEditContent] = useState(""); // Tracks the new content
+
+  const [commentInput, setCommentInput] = useState({});
+  const [showCommentInput, setShowCommentInput] = useState({});
+  const [showComments, setShowComments] = useState({});
 
   useEffect(() => {
     (async () => {
@@ -111,6 +119,84 @@ const MyPostSection = () => {
       }
     } catch (error) {
       console.error("Error disliking post:", error);
+    }
+  };
+
+  const toggleCommentInput = (postID) => {
+    setShowCommentInput((prev) => ({
+      ...prev,
+      [postID]: !prev[postID],
+    }));
+  };
+
+  const handleCommentChange = (postID, value) => {
+    setCommentInput((prev) => ({ ...prev, [postID]: value }));
+  };
+
+  const handleCommentSubmit = async (postID) => {
+    if (!commentInput[postID]?.trim()) {
+      toast.error("Comment cannot be empty!");
+      return;
+    }
+
+    const commentBody = {
+      postID,
+      comment: commentInput[postID],
+    };
+
+    try {
+      toast.loading("Adding comment...");
+      const success = await CommentPostRequest(commentBody);
+
+      if (success) {
+        toast.dismiss(); // Dismiss loading state
+        toast.success("Comment added successfully!");
+        setCommentInput((prev) => ({ ...prev, [postID]: "" }));
+
+        await MyPostDetailsRequest();
+      } else {
+        toast.dismiss();
+        toast.error("Failed to add comment!");
+      }
+    } catch (error) {
+      toast.dismiss();
+      console.error("Error adding comment:", error);
+      toast.error("Something went wrong! Please try again later.");
+    }
+  };
+
+  const handleShowAllComments = async (id) => {
+    try {
+      await AllCommentsByPostIDRequest(id);
+      setShowComments((prev) => ({
+        ...prev,
+        [id]: !prev[id],
+      }));
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+      alert("Failed to load comments. Please try again later.");
+    }
+  };
+
+  const handleDeleteComment = async (id) => {
+    const confirmDelete = await DeleteAlert();
+    if (!confirmDelete) return;
+
+    try {
+      const success = await DeleteCommentRequest(id);
+      if (success) {
+        await Swal.fire("Deleted!", "Your comment has been deleted.", "success");
+        await MyPostDetailsRequest();
+      } else {
+        await Swal.fire("Failed!", "Failed to delete the comment.", "error");
+      }
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+      await Swal.fire(
+        "Error!",
+        "An error occurred while deleting the comment.",
+        "error"
+      );
     }
   };
 
@@ -214,20 +300,24 @@ const MyPostSection = () => {
               <div className="flex items-center justify-between">
                 <ActionButton
                   icon={BiLike}
-                  text={`Like (${post.likes || 0})`}
+                  text="Like"
+                  count={`(${post.likes || 0})`}
                   hoverColor="text-red-500"
                   onClick={() => handleLike(post._id)}
                 />
                 <ActionButton
                   icon={BiDislike}
-                  text={`Dislike (${post.dislikes || 0})`}
+                  text="Dislike"
+                  count={`(${post.dislikes || 0})`}
                   hoverColor="text-red-500"
                   onClick={() => handleDisLike(post._id)}
                 />
                 <ActionButton
                   icon={FaComment}
                   text="Comment"
-                  hoverColor="text-green-500"
+                  count={`(${post.commentCount || 0})`}
+                  hoverColor="text-red-500"
+                  onClick={() => toggleCommentInput(post._id)}
                 />
                 <ActionButton
                   icon={FaShare}
@@ -235,6 +325,91 @@ const MyPostSection = () => {
                   hoverColor="text-purple-500"
                 />
               </div>
+              {/* Comment Section */}
+              {showCommentInput[post._id] && (
+                <div className="mt-4">
+                  <input
+                    type="text"
+                    placeholder="Write a comment..."
+                    value={commentInput[post._id] || ""}
+                    onChange={(e) =>
+                      handleCommentChange(post._id, e.target.value)
+                    }
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none"
+                  />
+                  <button
+                    onClick={() => handleCommentSubmit(post._id)}
+                    className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                  >
+                    Add Comment
+                  </button>
+                  <div className="mt-4">
+                    <button
+                      onClick={() => handleShowAllComments(post._id)}
+                      className="text-blue-500 hover:underline"
+                    >
+                      {showComments[post._id]
+                        ? "Hide Comments"
+                        : "Show All Comments"}
+                    </button>
+                    {showComments[post._id] && (
+                      <div className="mt-4">
+                        {AllCommentsByPostID &&
+                        AllCommentsByPostID.length > 0 ? (
+                          AllCommentsByPostID.map((comment) => {
+                            const formattedDate = new Date(
+                              comment.createdAt
+                            ).toLocaleDateString("en-US", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            });
+
+                            return (
+                              <div
+                                key={comment._id}
+                                className="flex items-center mb-2"
+                              >
+                                <img
+                                  src={
+                                    comment.userDetails.profileImg ||
+                                    "default-profile.jpg"
+                                  }
+                                  alt="Profile"
+                                  className="w-8 h-8 rounded-full mr-2"
+                                />
+                                <div>
+                                  <div className="flex items-center w-full space-x-2">
+                                    <p className="font-semibold text-sm">
+                                      {comment.userDetails.fullName}
+                                    </p>
+                                    <p className="text-sm justify-end ml-auto text-gray-500">
+                                      {formattedDate}
+                                    </p>
+                                    <div className="me-auto">
+                                      <HiDotsHorizontal
+                                        className="text-lg text-gray-500 hover:text-red-500 cursor-pointer"
+                                        onClick={() =>
+                                          handleDeleteComment(comment._id)
+                                        }
+                                      />
+                                    </div>
+                                  </div>
+                                  <p className="text-gray-700">
+                                    {comment.comment}
+                                  </p>
+                                </div>
+                              </div>
+                            );
+                          })
+                        ) : (
+                          <p className="text-gray-500">No comments yet.</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           );
         })
@@ -245,7 +420,7 @@ const MyPostSection = () => {
   );
 };
 
-const ActionButton = ({ icon: Icon, text, hoverColor, onClick }) => (
+const ActionButton = ({ icon: Icon, text, count, hoverColor, onClick }) => (
   <button
     className={`flex items-center text-gray-500 hover:${hoverColor} transition`}
     aria-label={text}
@@ -253,6 +428,7 @@ const ActionButton = ({ icon: Icon, text, hoverColor, onClick }) => (
   >
     <Icon className="text-xl mr-1" />
     <span className="hidden sm:inline">{text}</span>
+    <span>{count}</span>
   </button>
 );
 

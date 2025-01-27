@@ -81,7 +81,7 @@ export const ReadAllCommentsByPostIDService = async (req) => {
 // Delete a comment service
 export const DeleteCommentService = async (req) => {
     try {
-        const commentID  = new ObjectID(req.body.id)
+        const commentID = new ObjectID(req.body.id);
         const userID = req.headers.user_id;
 
         if (!commentID) {
@@ -99,6 +99,9 @@ export const DeleteCommentService = async (req) => {
             return { status: 'Fail', message: 'You are not authorized to delete this comment' };
         }
 
+        // Get the associated post ID
+        const postID = comment.postID;
+
         // Delete the comment
         const result = await CommentModel.deleteOne({ _id: commentID });
 
@@ -106,9 +109,20 @@ export const DeleteCommentService = async (req) => {
             return { status: 'Fail', message: 'Failed to delete the comment' };
         }
 
-        return { status: 'success', message: 'Comment deleted successfully' };
+        // Update the comment count on the associated post
+        const postUpdate = await PostModel.updateOne(
+            { _id: postID },
+            { $inc: { commentCount: -1 } } // Decrease the comment count
+        );
+
+        if (postUpdate.modifiedCount === 0) {
+            return { status: 'Fail', message: 'Failed to update comment count on the post' };
+        }
+
+        return { status: 'success', message: 'Comment deleted successfully, and comment count updated' };
     } catch (e) {
         return { status: 'Fail', message: e.toString() };
     }
 };
+
 

@@ -5,7 +5,9 @@ import { HiDotsHorizontal } from "react-icons/hi";
 import usePostStore from "../../store/PostStore";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import { MdOutlineDelete } from "react-icons/md";
+import { TiDeleteOutline } from "react-icons/ti";
+import { DeleteAlert } from "../../utility/Utility";
+import Swal from "sweetalert2";
 // import { DeleteAlert } from "../../utility/Utility";
 // import Swal from "sweetalert2";
 
@@ -19,6 +21,7 @@ const PostSection = () => {
     CommentPostRequest,
     AllCommentsByPostID,
     AllCommentsByPostIDRequest,
+    DeleteCommentRequest,
   } = usePostStore();
   const [loading, setLoading] = useState(true);
   const [commentInput, setCommentInput] = useState({});
@@ -121,7 +124,7 @@ const PostSection = () => {
         toast.dismiss(); // Dismiss loading state
         toast.success("Comment added successfully!");
         setCommentInput((prev) => ({ ...prev, [postID]: "" }));
-        
+
         await AllPostDetailsRequest();
       } else {
         toast.dismiss();
@@ -144,6 +147,28 @@ const PostSection = () => {
     } catch (error) {
       console.error("Error fetching comments:", error);
       alert("Failed to load comments. Please try again later.");
+    }
+  };
+
+  const handleDeleteComment = async (id) => {
+    const confirmDelete = await DeleteAlert();
+    if (!confirmDelete) return;
+
+    try {
+      const success = await DeleteCommentRequest(id);
+      if (success) {
+        await Swal.fire("Deleted!", "Your comment has been deleted.", "success");
+        await AllPostDetailsRequest();
+      } else {
+        await Swal.fire("Failed!", "Failed to delete the comment.", "error");
+      }
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+      await Swal.fire(
+        "Error!",
+        "An error occurred while deleting the comment.",
+        "error"
+      );
     }
   };
 
@@ -281,50 +306,57 @@ const PostSection = () => {
                     </button>
                     {showComments[post._id] && (
                       <div className="mt-4">
-                        {AllCommentsByPostID?.map((comment) => {
-                          const formattedDate = new Date(
-                            comment.createdAt
-                          ).toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                          });
+                        {AllCommentsByPostID &&
+                        AllCommentsByPostID.length > 0 ? (
+                          AllCommentsByPostID.map((comment) => {
+                            const formattedDate = new Date(
+                              comment.createdAt
+                            ).toLocaleDateString("en-US", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            });
 
-                          return (
-                            <div
-                              key={comment._id}
-                              className="flex items-center mb-2"
-                            >
-                              <img
-                                src={
-                                  comment.userDetails.profileImg ||
-                                  "default-profile.jpg"
-                                }
-                                alt="Profile"
-                                className="w-8 h-8 rounded-full mr-2"
-                              />
-                              <div>
-                                <div className="flex items-center w-full space-x-2">
-                                  <p className="font-semibold text-sm">
-                                    {comment.userDetails.fullName}
-                                  </p>
-                                  <p className="text-sm justify-end ml-auto text-gray-500">
-                                    {formattedDate}
-                                  </p>
-                                  <div className="me-auto">
-                                  <HiDotsHorizontal
-                                    className="text-lg text-gray-500 hover:text-red-500 cursor-pointer"
-                                    onClick={() => handleDeleteComment(comment._id)}
-                                  />
+                            return (
+                              <div
+                                key={comment._id}
+                                className="flex items-center mb-2"
+                              >
+                                <img
+                                  src={
+                                    comment.userDetails.profileImg ||
+                                    "default-profile.jpg"
+                                  }
+                                  alt="Profile"
+                                  className="w-8 h-8 rounded-full mr-2"
+                                />
+                                <div>
+                                  <div className="flex items-center w-full space-x-2">
+                                    <p className="font-semibold text-sm">
+                                      {comment.userDetails.fullName}
+                                    </p>
+                                    <p className="text-sm justify-end ml-auto text-gray-500">
+                                      {formattedDate}
+                                    </p>
+                                    <div className="me-auto">
+                                      <TiDeleteOutline
+                                        className="text-lg text-gray-500 hover:text-red-500 cursor-pointer"
+                                        onClick={() =>
+                                          handleDeleteComment(comment._id)
+                                        }
+                                      />
+                                    </div>
                                   </div>
+                                  <p className="text-gray-700">
+                                    {comment.comment}
+                                  </p>
                                 </div>
-                                <p className="text-gray-700">
-                                  {comment.comment}
-                                </p>
                               </div>
-                            </div>
-                          );
-                        })}
+                            );
+                          })
+                        ) : (
+                          <p className="text-gray-500">No comments yet.</p>
+                        )}
                       </div>
                     )}
                   </div>

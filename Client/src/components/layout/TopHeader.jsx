@@ -15,7 +15,7 @@ const TopHeader = () => {
     const [content, setContent] = useState('');
     const [image, setImage] = useState(null);
 
-    const { PostCreateRequest, AllPostDetailsRequest } = PostStore();
+    const { PostCreateRequest, AllPostDetailsRequest, MyPostDetailsRequest } = PostStore();
 
     const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
@@ -69,6 +69,7 @@ const TopHeader = () => {
                 setImage(null);
                 toast.success("Post created successfully!");
                 AllPostDetailsRequest()
+                MyPostDetailsRequest();
             })
             .catch((err) => {
                 console.error("Error creating post:", err.response || err.message || err);

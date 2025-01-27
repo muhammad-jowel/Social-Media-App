@@ -13,6 +13,7 @@ const DataSchema = new mongoose.Schema(
         dislikedBy: [
             { type: mongoose.Schema.Types.ObjectId, ref: 'users' }
         ],
+        commentCount: { type: Number, default: 0 },
         shares: [
             {
                 userID: { type: mongoose.Schema.Types.ObjectId, required: true },

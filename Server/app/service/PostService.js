@@ -93,6 +93,7 @@ export const ReadPostService = async (req, res) => {
                     content: 1,
                     likes: 1,
                     dislikes: 1,
+                    commentCount: 1,
                     createdAt: 1,
                     "userDetails.fullName": 1,
                     "userDetails.profileImg": 1
@@ -170,6 +171,7 @@ export const ReadAllPostService = async () => {
             content: 1,
             likes: 1,
             dislikes: 1,
+            commentCount: 1,
             createdAt: 1,
             "userDetails.fullName": 1,  // Ensure fullName is selected
             "userDetails.profileImg": 1,  // Ensure profileImg is selected

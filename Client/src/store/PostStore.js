@@ -136,6 +136,63 @@ const PostStore = create((set) => ({
     },
 
 
+    // Comment on a Post
+    CommentPostRequest: async (commentBody) => {
+        try {
+            let response = await axios.post(`${BaseUrl}Create-Comment`, commentBody, {
+                headers: {
+                    token: Cookies.get('token'),
+                },
+            });
+            return response.data.status ==='success';
+        } catch (err) {
+            unauthorized(err.response);
+            throw err;
+        }
+    },
+
+
+    // Read All Comments By Post ID
+    AllCommentsByPostID: null,
+    AllCommentsByPostIDRequest: async (id) => {
+        try {
+            let response = await axios.get(`${BaseUrl}Read-Comments/${id}`, 
+                {
+                    headers: {
+                        token: Cookies.get('token'),
+                    },
+                }
+            );
+            if (response.data.status === 'success') {
+                set({ AllCommentsByPostID: response.data.data });
+            } else {
+                set({ AllCommentsByPostID: [] });
+            }
+        } catch (err) {
+            unauthorized(err.response);
+            throw err;
+        }
+    },
+
+
+    // Delete a Comment
+    DeleteCommentRequest: async (id) => {
+        try {
+            let response = await axios.delete(`${BaseUrl}Delete-Comment`, {
+                data: { id },
+                headers: {
+                    token: Cookies.get('token'),
+                },
+            });
+            return response.data.status ==='success';
+        } catch (err) {
+            unauthorized(err.response);
+            throw err;
+        }
+    },
+
+
+
 
     
 }));

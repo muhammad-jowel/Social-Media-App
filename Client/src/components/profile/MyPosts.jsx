@@ -180,7 +180,7 @@ const MyPostSection = () => {
               {editMode === post._id ? (
                 <div className="mb-4">
                   <textarea
-                    className="w-full p-2 border border-gray-300 rounded-lg"
+                    className="w-full p-2 border focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent rounded-lg"
                     value={editContent}
                     onChange={(e) => setEditContent(e.target.value)}
                   />

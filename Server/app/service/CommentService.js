@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 const ObjectID = mongoose.Types.ObjectId;
 import CommentModel from "../model/CommentModel.js";
+import PostModel from "../model/PostModel.js";
 
 
 // Comment Post service
@@ -19,9 +20,14 @@ export const CreateCommentService = async (req) => {
         // Save the comment
         const data = await comment.save();
 
+        await PostModel.updateOne(
+            { _id: postID },              // Find the post by ID
+            { $inc: { commentCount: 1 } } // Increment commentCount by 1
+        );
+
         return { status: 'success', message: 'Comment added successfully', data: data };
     } catch (e) {
-        return { status: 'Fail', message: e.toString() };
+        return { status: 'fail', message: e.toString() };
     }
 };
 
@@ -30,39 +36,43 @@ export const CreateCommentService = async (req) => {
 // Read All Comments By Post ID service
 export const ReadAllCommentsByPostIDService = async (req) => {
     try {
-        const postID = new ObjectID(req.params.id);
+        const postID = req.params.id;
 
-        // Use aggregation to fetch comments for the specified post with user details
+        if (!ObjectID.isValid(postID)) {
+            return { status: 'Fail', message: 'Invalid Post ID' };
+        }
+
         const comments = await CommentModel.aggregate([
-            { $match: { postID: postID } },
+            { $match: { postID: new ObjectID(postID) } },
             {
                 $lookup: {
-                    from: "users", // The name of the user collection in the database
-                    localField: "userID", // Field in the comments collection
-                    foreignField: "_id", // Field in the user collection
+                    from: "users",
+                    localField: "userID",
+                    foreignField: "_id",
                     as: "userDetails"
                 }
             },
-            {
-                $unwind: "$userDetails" // Unwind to include user details as a flat object
-            },
+            { $unwind: "$userDetails" },
             {
                 $project: {
                     comment: 1,
-                    timestamp: 1,
+                    createdAt: 1,
                     "userDetails.fullName": 1,
-                    "userDetails.img": 1
+                    "userDetails.profileImg": {
+                        $ifNull: ["$userDetails.profileImg", "default-profile.jpg"]
+                    }
                 }
             }
         ]);
 
         if (!comments.length) {
-            return { status: 'Fail', message: 'No comments found for this post' };
+            return { status: 'Fail', message: 'No comments found for this post', data: [] };
         }
 
-        return { status: 'success', data: comments };
+        return { status: 'success', message: 'Comments fetched successfully', data: comments };
     } catch (e) {
-        return { status: 'Fail', message: e.toString() };
+        console.error("Error fetching comments:", e);
+        return { status: 'Fail', message: 'Internal Server Error' };
     }
 };
 

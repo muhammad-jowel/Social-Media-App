@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import profile from "../../assets/images/profile.png";
+// import profile from "../../assets/images/profile.png";
 import { IoMdHome } from "react-icons/io";
 import { CgProfile } from "react-icons/cg";
 import { IoIosNotifications } from "react-icons/io";

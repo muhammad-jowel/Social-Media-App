@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { IoSearchSharp, IoSettings, IoLogOut } from "react-icons/io5";
 import { CgProfile } from "react-icons/cg";
-import profile from '../../assets/images/profile.png';
+// import profile from '../../assets/images/profile.png';
 import PostStore from '../../store/PostStore';
 import { toast } from 'react-toastify';
 import UserStore from '../../store/UserStore';

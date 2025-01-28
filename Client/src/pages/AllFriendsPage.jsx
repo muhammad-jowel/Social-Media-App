@@ -1,6 +1,6 @@
 import React from 'react';
 import AllFriends from '../components/AllFriends/AllFriends';
-import Layout from '../components/layout/layout';
+import Layout from '../components/layout/Layout';
 
 const AllFriendsPage = () => {
     return (

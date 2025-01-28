@@ -27,6 +27,8 @@ const PostSection = () => {
   const [commentInput, setCommentInput] = useState({});
   const [showCommentInput, setShowCommentInput] = useState({});
   const [showComments, setShowComments] = useState({});
+  const [likedPosts, setLikedPosts] = useState({});
+  const [disLikedPosts, setDisLikedPosts] = useState({});
   // const [dropdownPostId, setDropdownPostId] = useState(null);
 
   useEffect(() => {
@@ -72,6 +74,7 @@ const PostSection = () => {
     try {
       const success = await LikePostRequest(id);
       if (success) {
+        setLikedPosts((prev) => ({ ...prev, [id]: true }));
         await AllPostDetailsRequest();
       } else {
         toast.error("Already DisLike!");
@@ -85,6 +88,7 @@ const PostSection = () => {
     try {
       const success = await DislikePostRequest(id);
       if (success) {
+        setDisLikedPosts((prev) => ({ ...prev, [id]: true }));
         await AllPostDetailsRequest();
       } else {
         toast.error("Already Like!");
@@ -253,7 +257,8 @@ const PostSection = () => {
                   icon={BiLike}
                   text="Like"
                   count={`(${post.likes || 0})`}
-                  hoverColor="text-red-500"
+                  hoverColor="text-green-500"
+                  customColor={likedPosts[post._id] ? "text-green-500" : "text-gray-500" }
                   onClick={() => handleLike(post._id)}
                 />
                 <ActionButton
@@ -261,20 +266,21 @@ const PostSection = () => {
                   text="Dislike"
                   count={`(${post.dislikes || 0})`}
                   hoverColor="text-red-500"
+                  customColor={disLikedPosts[post._id] ? "text-red-500" : "text-gray-500"}
                   onClick={() => handleDisLike(post._id)}
                 />
                 <ActionButton
                   icon={FaComment}
                   text="Comment"
                   count={`(${post.commentCount || 0})`}
-                  hoverColor="text-red-500"
+                  hoverColor="text-blue-500"
                   onClick={() => toggleCommentInput(post._id)}
                 />
 
                 <ActionButton
                   icon={FaShare}
                   text="Share"
-                  hoverColor="text-red-500"
+                  hoverColor="text-purple-500"
                 />
               </div>
               {/* Comment Section */}
@@ -372,9 +378,9 @@ const PostSection = () => {
   );
 };
 
-const ActionButton = ({ icon: Icon, text, count, hoverColor, onClick }) => (
+const ActionButton = ({ icon: Icon, text, count, hoverColor, customColor = "", onClick }) => (
   <button
-    className={`flex items-center text-gray-500 hover:${hoverColor} transition`}
+    className={`flex items-center text-gray-500 ${customColor} hover:${hoverColor} transition`}
     aria-label={text}
     onClick={onClick}
   >

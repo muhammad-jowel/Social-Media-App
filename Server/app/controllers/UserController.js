@@ -6,7 +6,8 @@ import {
     forgetPasswordService, 
     verifyOtpService, 
     updatePasswordService, 
-    deleteAccountService
+    deleteAccountService,
+    getUserProfileService
 } from '../service/UserService.js';
 
 
@@ -75,3 +76,10 @@ export const DeleteAccount = async (req, res) => {
     let result = await deleteAccountService(req);
     return res.json(result);
 }
+
+
+// User Profile Read
+export const getUserProfile = async (req, res) => {
+    let result = await getUserProfileService(req);
+    return res.json(result);
+};

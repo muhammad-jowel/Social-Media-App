@@ -292,21 +292,34 @@ export const deleteAccountService = async (req, res) => {
 
 
 
-// UserName 
-export const checkUserNameService = async (req, res) => {
+// User Profile Read
+export const getUserProfileService = async (req, res) => {
     try {
-        const { username } = req.body;
+        let user_id = new ObjectID(req.body.id);
+        let MatchStage = {
+            $match: {
+                _id : user_id,
+            }
+        };
 
-        // Check if username exists in the database
-        const user = await UserModel.findOne({ username });
-
-        if (user) {
-            return res.json({ isUnique: false }); // Username is taken
+        let project = {
+            $project: {
+                email: 1,
+                userName: 1,
+                coverImg: 1,
+                profileImg: 1,
+                fullName: 1,
+                bio: 1,
+                location: 1,
+                phone: 1,
+                website: 1,
+                updatedAt: 1,
+            }
         }
 
-        res.json({ isUnique: true }); // Username is available
+        let data = await UserModel.aggregate([MatchStage, project]);
+        return { status: 'success', data: data[0]};
     } catch (error) {
-        console.error('Error checking username:', error);
-        res.status(500).json({ message: 'Server error' });
+        return { status: 'fail', message: error.toString()};
     }
-}
+};

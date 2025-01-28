@@ -24,6 +24,7 @@ router.post('/Reset-Password', UserController.ResetPassword); //Done
 router.post('/Verify-OTP', UserController.OTPVerification); //Done
 router.post('/Update-Password', UserController.UpdatePassword); //Done
 router.delete('/Delete-User', AuthMiddleware, UserController.DeleteAccount); //Done
+router.get('/Read-Users-Details', AuthMiddleware, UserController.getUserProfile); //Done
 
 
 

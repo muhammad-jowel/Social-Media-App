@@ -37,7 +37,7 @@ const LeftNavbar = () => {
   return (
     <>
       {/* Left Navbar for larger screens */}
-      <div className="md:w-64 bg-white shadow-lg rounded-lg p-3 md:p-4 z-10 hidden md:block md:sticky top-0">
+      <div className="md:w-64 bg-white shadow-lg rounded-lg p-3 md:p-4 z-10 hidden md:block md:sticky top-0 animate-fade-in">
         {/* Profile Section */}
         <Link to="/profile" className="flex items-center space-x-4 mb-6">
           <img

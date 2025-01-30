@@ -229,7 +229,7 @@ const MyPostSection = () => {
           return (
             <div
               key={post._id || index}
-              className="bg-white p-4 rounded-lg shadow mb-4 relative"
+              className="bg-white p-4 rounded-lg shadow mb-4 relative animate-fade-in"
             >
               {/* Header Section */}
               <div className="flex items-center mb-4">
@@ -253,7 +253,7 @@ const MyPostSection = () => {
                   />
                 </div>
                 {dropdownPostId === post._id && (
-                  <div className="absolute right-5 mt-28 w-32 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                  <div className="absolute right-5 mt-28 w-32 bg-white border border-gray-200 rounded-lg shadow-lg z-10 animate-fade-in">
                     <button
                       className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
                       onClick={() => handleEdit(post)}

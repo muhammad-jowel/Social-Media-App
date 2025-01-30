@@ -198,7 +198,7 @@ const PostSection = () => {
           return (
             <div
               key={post._id || index}
-              className="bg-white p-4 rounded-lg shadow mb-4"
+              className="bg-white p-4 rounded-lg shadow mb-4 animate-fade-in"
             >
               {/* Header Section */}
               <div className="flex items-center mb-4 relative">

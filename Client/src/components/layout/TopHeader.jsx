@@ -127,7 +127,7 @@ const TopHeader = () => {
                             onClick={toggleDropdown}
                         />
                         {isDropdownOpen && (
-                            <div className="absolute right-0 mt-4 w-40 bg-white shadow-lg rounded-lg py-2">
+                            <div className="absolute right-0 mt-4 w-40 bg-white shadow-lg rounded-lg py-2 animate-fade-in">
                                 <Link to="/profile" className="flex items-center px-4 py-2">
                                     <CgProfile className="mr-2" /> Profile
                                 </Link>
@@ -144,7 +144,7 @@ const TopHeader = () => {
             </div>
 
             {isModalOpen && (
-                <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+                <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50 animate-fade-in">
                     <div className="bg-white rounded-lg shadow-lg w-96 p-6">
                         <h2 className="text-xl font-semibold mb-4 text-purple-500">Create a Post</h2>
                         <form onSubmit={handlePostCreate}>

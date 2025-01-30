@@ -3,7 +3,7 @@ import profile from "../../assets/images/profile.png";
 
 const RightNavbar = () => {
   return (
-    <div className="md:w-64 bg-white shadow-lg rounded-lg p-4 z-10 hidden lg:block">
+    <div className="md:w-64 bg-white shadow-lg rounded-lg p-4 z-10 hidden lg:block animate-fade-in">
       {/* Messages Section */}
       <div className="mb-6">
         <h1 className="font-bold text-lg mb-2">Messages</h1>
